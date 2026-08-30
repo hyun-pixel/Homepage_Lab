@@ -8,7 +8,6 @@ const SMOOTHING_RESPONSE_MS = 150;
 const SEEK_INTERVAL_MS = 1000 / 24;
 const SEEK_TIME_THRESHOLD = 1 / 48;
 const MOBILE_MEDIA_QUERY = "(max-width: 768px), (pointer: coarse)";
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(Math.max(value, minimum), maximum);
@@ -44,7 +43,6 @@ export function CinematicBackground() {
 
     const scrollingElement = document.scrollingElement ?? document.documentElement;
     const mobileQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
-    const reducedMotionQuery = window.matchMedia(REDUCED_MOTION_QUERY);
 
     const scheduleScrub = () => {
       if (animationFrame === 0) {
@@ -57,7 +55,7 @@ export function CinematicBackground() {
         ? clamp(scrollingElement.scrollTop / scrollRange, 0, 1)
         : 0;
 
-      targetTime = reducedMotionQuery.matches ? 0 : progress * duration;
+      targetTime = progress * duration;
       scheduleScrub();
     };
 
@@ -199,7 +197,6 @@ export function CinematicBackground() {
     window.addEventListener("resize", handleResize, { passive: true });
     window.addEventListener("orientationchange", handleOrientationChange);
     mobileQuery.addEventListener("change", handleMediaPreferenceChange);
-    reducedMotionQuery.addEventListener("change", handleMediaPreferenceChange);
     documentResizeObserver?.observe(document.documentElement);
 
     measureScrollRange(true);
@@ -236,7 +233,6 @@ export function CinematicBackground() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleOrientationChange);
       mobileQuery.removeEventListener("change", handleMediaPreferenceChange);
-      reducedMotionQuery.removeEventListener("change", handleMediaPreferenceChange);
       documentResizeObserver?.disconnect();
     };
   }, []);
